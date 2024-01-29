@@ -1,0 +1,39 @@
+---
+- name: GATHERING INFO ON DEVICES
+  hosts: test_switch
+  #serial:   
+  gather_facts: no
+  vars:
+     #compliant_ios_version: 17.06.05
+
+  tasks:
+    - name: GATHERING FACTS
+      ios_facts:
+    - name: HOST NAME
+      debug:
+        var: ansible_net_hostname
+  # - name: SAVE RUNNING CONFIG
+        #ios_config:
+        # save_when: always
+    - name: MODEL
+      debug:
+        var: ansible_net_model
+    - name: CURRENT FIRMWARE VERSION
+      debug:
+        var: ansible_net_version
+    - name: CURRENT IMAGE
+      debug:
+        var: ansible_net_image
+    - name: PRESENT WORKING DIRECTORY
+      ios_command:
+        commands: "pwd"
+      register: pwd
+    - debug:
+        msg: "install add file {{ pwd.stdout[0] }}cat9k_iosxe.17.06.05.SPA.bin activate commit prompt-level none"
+      when: "'switch_93_600' in group_names"
+    - debug:
+        msg: "install add file {{ pwd.stdout[0] }}cat9k_lite_iosxe.17.06.05.SPA.bin activate commit prompt-level none"
+      when:  "'switch_9200' in group_names"
+    - debug:
+        msg: "install add file {{ pwd.stdout[0] }}cat9k_lite_iosxe.17.06.05.SPA.bin activate commit prompt-level none"
+      when:  "'test_switch' in group_names"
